@@ -43,6 +43,54 @@ class api:
 		else:
 			return resp['data']
 
+	def create(self, what, data):
+		if what not in self.types:
+			raise ValueError('wrong type of data requested')
+
+		payload = {
+			'token': self.jwt,
+			'type': what,
+			'data': data
+		}
+		r = requests.post('%s/backend/api/create' % self.serverUrl, json=payload, verify=False)
+		resp = json.loads(r.text)
+		if resp['error']:
+			raise ValueError('got error %s' % resp['desc'])
+		else:
+			return resp['data']
+
+	def edit(self, what, data):
+		if what not in self.types:
+			raise ValueError('wrong type of data requested')
+
+		payload = {
+			'token': self.jwt,
+			'type': what,
+			'data': data
+		}
+		r = requests.post('%s/backend/api/edit' % self.serverUrl, json=payload, verify=False)
+		resp = json.loads(r.text)
+		if resp['error']:
+			raise ValueError('got error %s' % resp['desc'])
+		else:
+			return resp['data']
+
+	def delete(self, what, id):
+		if what not in self.types:
+			raise ValueError('wrong type of data requested')
+
+		payload = {
+			'token': self.jwt,
+			'type': what,
+			'data': id
+		}
+		r = requests.post('%s/backend/api/delete' % self.serverUrl, json=payload, verify=False)
+		resp = json.loads(r.text)
+		if resp['error']:
+			raise ValueError('got error %s' % resp['desc'])
+		else:
+			return resp['data']
+
 	def post(self, what, data):
 		if what not in ['versions']:
 			raise ValueError('wrong type of data requested')
