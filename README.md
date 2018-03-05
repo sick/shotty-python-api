@@ -43,3 +43,9 @@ versions = shotty.get('versions', projectId='CASINO') # get all versions for tes
 print 'dailies versions', len([version for version in versions if version['type'] == 'dailies'])
 shotty.get('versions', shotId='748324hfsd904') # get all versions for one shot
 ```
+
+```python
+shotty.create('shots', {'projectId': 'demo', 'sequence': 'api', 'code': '002', 'creatorId': None}) # create shot
+shotty.edit('shots', {'id': 'b314aa2f-e645-4174-b9f2-25dbc6761607', 'description': 'Test'}) # edit shot
+shotty.delete('b314aa2f-e645-4174-b9f2-25dbc6761607') # delete shot
+```
