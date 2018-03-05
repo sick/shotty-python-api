@@ -4,6 +4,12 @@ This file will be added to as part of each release
 
 ----
 
+Version 0.3.0, Mon 05 Mar 2018
+===============================
+
+767da3e8e6	[+] create, edit, delete (sick)
+
+
 Version 0.1.6, Fri 12 May 2017
 ===============================
 
