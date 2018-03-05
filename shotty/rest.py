@@ -1,4 +1,3 @@
-from socketIO_client import SocketIO, LoggingNamespace, BaseNamespace
 import requests
 import json
 import os.path
@@ -24,33 +23,6 @@ class api:
 		else:
 			print 'shotty api authenticated'
 			self.jwt = resp['data']['token']
-
-	def _on_socket_response(self, *args):
-		resp = json.loads(args[0].split(',', 1)[1])
-		print('_on_socket_response', resp)
-
-
-	def changes(self, namespace):
-		if namespace not in self.types:
-			raise ValueError('wrong type of changes requested')
-
-		# try:
-		socket = SocketIO(self.serverUrl,
-				 self.port,
-				 resource='socket',
-				 params={'token': self.jwt})
-		# except StopIteration:
-		# 	raise Exception('[engine.io waiting for connection]')
-
-		socket = SocketIO(self.serverUrl,
-				 self.port,
-				 resource='socket',
-				 params={'token': self.jwt})
-
-		socket.define(BaseNamespace, '/'+namespace)
-		socket.on('message', self._on_socket_response)
-
-		socket.wait() # Wait forever.
 
 	def get(self, what, id=False, projectId=False, shotId=False, versionId=False):
 		if what not in self.types:

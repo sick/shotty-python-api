@@ -22,7 +22,6 @@ setup(
     long_description=open('README.rst').read() if exists("README.rst") else "",
     # Any requirements here, e.g. "Django >= 1.1.1"
     install_requires=[
-        'socketIO_client'
     ],
     # Ensure we include files from the manifest
     include_package_data=True,
