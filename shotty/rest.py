@@ -12,11 +12,14 @@ class api:
 		self._uploaderUrl = '%s://%s:%i' % (self.protocol, self.host, 9201)
 		self.secret = secret
 		self.jwt = False
-		self.types = ['users', 'chats', 'tasks', 'todos', 'versions', 'shots', 'projects', 'lists']
+		self.types = {
+			'read': ['users', 'chats', 'tasks', 'todos', 'versions', 'shots', 'projects', 'lists'],
+			'write': ['chats', 'tasks', 'todos', 'shots']
+		}
 		self._connect()
 
 	def _connect(self):
-		r = requests.post('%s/backend/api/authBySecret' % self.serverUrl, json={'secret': self.secret}, verify=False)
+		r = requests.post('%s/backend/api/authBySecret' % self.serverUrl, json={'secret': self.secret})
 		resp = json.loads(r.text)
 		if resp['error']:
 			raise ValueError('Can`t authenticate with given secret')
@@ -25,7 +28,7 @@ class api:
 			self.jwt = resp['data']['token']
 
 	def get(self, what, id=False, projectId=False, shotId=False, versionId=False):
-		if what not in self.types:
+		if what not in self.types['read']:
 			raise ValueError('wrong type of data requested')
 
 		payload = {
@@ -36,7 +39,7 @@ class api:
 			'shotId': shotId,
 			'versionId': versionId
 		}
-		r = requests.post('%s/backend/api/get' % self.serverUrl, json=payload, verify=False)
+		r = requests.post('%s/backend/api/get' % self.serverUrl, json=payload)
 		resp = json.loads(r.text)
 		if resp['error']:
 			raise ValueError('got error %s' % resp['desc'])
@@ -44,7 +47,7 @@ class api:
 			return resp['data']
 
 	def create(self, what, data):
-		if what not in self.types:
+		if what not in self.types['write']:
 			raise ValueError('wrong type of data requested')
 
 		payload = {
@@ -52,7 +55,7 @@ class api:
 			'type': what,
 			'data': data
 		}
-		r = requests.post('%s/backend/api/create' % self.serverUrl, json=payload, verify=False)
+		r = requests.post('%s/backend/api/create' % self.serverUrl, json=payload)
 		resp = json.loads(r.text)
 		if resp['error']:
 			raise ValueError('got error %s' % resp['desc'])
@@ -60,7 +63,7 @@ class api:
 			return resp['data']
 
 	def edit(self, what, data):
-		if what not in self.types:
+		if what not in self.types['write']:
 			raise ValueError('wrong type of data requested')
 
 		payload = {
@@ -68,7 +71,7 @@ class api:
 			'type': what,
 			'data': data
 		}
-		r = requests.post('%s/backend/api/edit' % self.serverUrl, json=payload, verify=False)
+		r = requests.post('%s/backend/api/edit' % self.serverUrl, json=payload)
 		resp = json.loads(r.text)
 		if resp['error']:
 			raise ValueError('got error %s' % resp['desc'])
@@ -76,7 +79,7 @@ class api:
 			return resp['data']
 
 	def delete(self, what, id):
-		if what not in self.types:
+		if what not in self.types['write']:
 			raise ValueError('wrong type of data requested')
 
 		payload = {
@@ -84,7 +87,7 @@ class api:
 			'type': what,
 			'data': id
 		}
-		r = requests.post('%s/backend/api/delete' % self.serverUrl, json=payload, verify=False)
+		r = requests.post('%s/backend/api/delete' % self.serverUrl, json=payload)
 		resp = json.loads(r.text)
 		if resp['error']:
 			raise ValueError('got error %s' % resp['desc'])

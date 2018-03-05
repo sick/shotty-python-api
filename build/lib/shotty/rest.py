@@ -1,4 +1,3 @@
-from socketIO_client import SocketIO, LoggingNamespace, BaseNamespace
 import requests
 import json
 import os.path
@@ -25,27 +24,6 @@ class api:
 			print 'shotty api authenticated'
 			self.jwt = resp['data']['token']
 
-	def _on_socket_response(self, *args):
-		resp = json.loads(args[0].split(',', 1)[1])
-		print('_on_socket_response', resp)
-
-
-	def changes(self, namespace):
-		if namespace not in self.types:
-			raise ValueError('wrong type of changes requested')
-
-
-		socket = SocketIO(self.serverUrl,
-				 self.port,
-				 resource='socket',
-				 params={'token': self.jwt},
-				 verify=False)
-
-		socket.define(BaseNamespace, '/'+namespace)
-		socket.on('message', self._on_socket_response)
-
-		socket.wait() # Wait forever.
-
 	def get(self, what, id=False, projectId=False, shotId=False, versionId=False):
 		if what not in self.types:
 			raise ValueError('wrong type of data requested')
@@ -59,6 +37,54 @@ class api:
 			'versionId': versionId
 		}
 		r = requests.post('%s/backend/api/get' % self.serverUrl, json=payload, verify=False)
+		resp = json.loads(r.text)
+		if resp['error']:
+			raise ValueError('got error %s' % resp['desc'])
+		else:
+			return resp['data']
+
+	def create(self, what, data):
+		if what not in self.types:
+			raise ValueError('wrong type of data requested')
+
+		payload = {
+			'token': self.jwt,
+			'type': what,
+			'data': data
+		}
+		r = requests.post('%s/backend/api/create' % self.serverUrl, json=payload, verify=False)
+		resp = json.loads(r.text)
+		if resp['error']:
+			raise ValueError('got error %s' % resp['desc'])
+		else:
+			return resp['data']
+
+	def edit(self, what, data):
+		if what not in self.types:
+			raise ValueError('wrong type of data requested')
+
+		payload = {
+			'token': self.jwt,
+			'type': what,
+			'data': data
+		}
+		r = requests.post('%s/backend/api/edit' % self.serverUrl, json=payload, verify=False)
+		resp = json.loads(r.text)
+		if resp['error']:
+			raise ValueError('got error %s' % resp['desc'])
+		else:
+			return resp['data']
+
+	def delete(self, what, id):
+		if what not in self.types:
+			raise ValueError('wrong type of data requested')
+
+		payload = {
+			'token': self.jwt,
+			'type': what,
+			'data': id
+		}
+		r = requests.post('%s/backend/api/delete' % self.serverUrl, json=payload, verify=False)
 		resp = json.loads(r.text)
 		if resp['error']:
 			raise ValueError('got error %s' % resp['desc'])
