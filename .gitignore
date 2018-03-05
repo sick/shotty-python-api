@@ -1,0 +1,4 @@
+examples/*
+*.pyc
+*.swp
+.DS_Store
